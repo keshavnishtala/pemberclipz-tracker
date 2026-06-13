@@ -6,6 +6,7 @@ import MilestoneTracker from "@/components/MilestoneTracker";
 import VideoGrid from "@/components/VideoGrid";
 import LatestVideo from "@/components/LatestVideo";
 import ChannelSummary from "@/components/ChannelSummary";
+import GrowthTips from "@/components/GrowthTips";
 
 export default async function Home() {
   const channelData = getChannel();
@@ -52,6 +53,8 @@ export default async function Home() {
         </div>
 
         {videoData.length > 0 && <VideoGrid videos={videoData} />}
+
+        <GrowthTips channel={channelData ?? {}} videos={videoData} />
       </div>
     </main>
   );
