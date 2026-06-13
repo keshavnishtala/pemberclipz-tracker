@@ -59,9 +59,29 @@ if (snapshots.length > MAX_SNAPSHOTS) snapshots.splice(0, snapshots.length - MAX
 writeJson("snapshots.json", snapshots);
 console.log(`Snapshot saved (${snapshots.length} total)`);
 
-console.log("Fetching videos (full metadata — may take a minute)...");
+// Fetch RSS for descriptions, view counts, and like counts (no bot detection)
+console.log("Fetching RSS feed...");
+const CHANNEL_ID = "UCzwn4hawolG-r7WICjh16fQ";
+const rssRes = await fetch(`https://www.youtube.com/feeds/videos.xml?channel_id=${CHANNEL_ID}`);
+const rssXml = await rssRes.text();
+
+// Parse RSS entries into a map keyed by video ID
+const rssMap = {};
+const entryMatches = rssXml.matchAll(/<entry>([\s\S]*?)<\/entry>/g);
+for (const [, entry] of entryMatches) {
+  const id = (entry.match(/<yt:videoId>([^<]+)<\/yt:videoId>/) ?? [])[1];
+  const desc = (entry.match(/<media:description>([^<]*)<\/media:description>/) ?? [])[1] ?? "";
+  const views = parseInt((entry.match(/views="(\d+)"/) ?? [])[1] ?? "0", 10);
+  const likes = parseInt((entry.match(/count="(\d+)"/) ?? [])[1] ?? "0", 10);
+  if (id) rssMap[id] = { description: desc.trim(), view_count: views, like_count: likes };
+}
+console.log(`RSS: found ${Object.keys(rssMap).length} entries`);
+
+// Use --flat-playlist to avoid per-video page fetches (bypasses bot detection)
+console.log("Fetching video list...");
 const videosRaw = await ytdlp([
-  "--dump-json", "--playlist-end", "50",
+  "--dump-json", "--flat-playlist", "--playlist-end", "50",
+  "--js-runtimes", "node",
   `${CHANNEL}/videos`,
 ]);
 
@@ -71,16 +91,17 @@ const videos = videosRaw
   .filter(Boolean)
   .map((line) => {
     const d = JSON.parse(line);
+    const rss = rssMap[d.id] ?? {};
     return {
       id: d.id,
       title: d.title,
       url: `https://www.youtube.com/watch?v=${d.id}`,
       thumbnail: `https://i.ytimg.com/vi/${d.id}/mqdefault.jpg`,
-      view_count: d.view_count ?? 0,
-      like_count: d.like_count ?? 0,
+      view_count: rss.view_count ?? d.view_count ?? 0,
+      like_count: rss.like_count ?? d.like_count ?? 0,
       duration: d.duration ?? 0,
       upload_date: d.upload_date ?? "",
-      description: d.description ?? "",
+      description: rss.description ?? d.description ?? "",
     };
   });
 
