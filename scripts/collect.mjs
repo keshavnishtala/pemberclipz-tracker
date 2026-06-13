@@ -43,7 +43,7 @@ const channel = {
   uploader_url: ch.uploader_url ?? "",
 };
 
-writeJson("channel.json", channel);
+// view_count and video_count are filled in after fetching videos below
 console.log(`Channel: ${channel.title} — ${channel.subscriber_count} subscribers`);
 
 const snapshot = {
@@ -107,4 +107,10 @@ const videos = videosRaw
 
 writeJson("videos.json", videos);
 console.log(`Saved ${videos.length} videos`);
+
+// Now we have accurate totals — update channel.json
+channel.video_count = videos.length;
+channel.view_count = videos.reduce((sum, v) => sum + v.view_count, 0);
+writeJson("channel.json", channel);
+console.log(`Total views: ${channel.view_count}, Total videos: ${channel.video_count}`);
 console.log("Done.");
