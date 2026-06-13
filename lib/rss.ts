@@ -11,7 +11,7 @@ export interface RssVideo {
 }
 
 export async function fetchRssFeed(): Promise<RssVideo[]> {
-  const res = await fetch(RSS_URL, { next: { revalidate: 900 } }); // 15 min cache
+  const res = await fetch(RSS_URL);
   if (!res.ok) throw new Error(`RSS fetch failed: ${res.status}`);
   const xml = await res.text();
 

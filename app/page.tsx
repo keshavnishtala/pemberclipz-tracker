@@ -7,9 +7,6 @@ import VideoGrid from "@/components/VideoGrid";
 import LatestVideo from "@/components/LatestVideo";
 import ChannelSummary from "@/components/ChannelSummary";
 
-// Revalidate every hour so RSS stays fresh without a full redeploy
-export const revalidate = 3600;
-
 export default async function Home() {
   const channelData = getChannel();
   const snapshotData = getSnapshots();
