@@ -29,8 +29,8 @@ function parseUploadDate(d: string): Date | null {
 export default function VideoGrid({ videos }: Props) {
   return (
     <div>
-      <h2 className="text-lg font-semibold text-white mb-4">Recent Videos</h2>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      <h2 className="text-base font-semibold text-white mb-3 uppercase tracking-widest text-[#aaa]">Recent Videos</h2>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
         {videos.map((v) => {
           const date = parseUploadDate(v.upload_date);
           return (
@@ -39,30 +39,42 @@ export default function VideoGrid({ videos }: Props) {
               href={v.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="bg-gray-900 rounded-xl overflow-hidden hover:ring-2 hover:ring-red-500 transition-all group"
+              className="bg-[#1a1a1a] border border-white/5 rounded-xl overflow-hidden hover:border-red-500/40 hover:bg-[#1f1f1f] transition-all group"
             >
-              <div className="relative">
+              {/* Thumbnail */}
+              <div className="relative overflow-hidden">
                 <img
                   src={`https://i.ytimg.com/vi/${v.id}/mqdefault.jpg`}
                   alt={v.title}
-                  className="w-full aspect-video object-cover"
+                  className="w-full aspect-video object-cover group-hover:scale-105 transition-transform duration-300"
                 />
+                {/* Play overlay */}
+                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors flex items-center justify-center">
+                  <div className="w-12 h-12 rounded-full bg-red-600/90 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity scale-75 group-hover:scale-100 duration-200">
+                    <svg className="w-5 h-5 text-white ml-0.5" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M8 5v14l11-7z" />
+                    </svg>
+                  </div>
+                </div>
                 {v.duration > 0 && (
-                  <span className="absolute bottom-1 right-1 bg-black/80 text-white text-xs px-1 rounded">
+                  <span className="absolute bottom-1.5 right-1.5 bg-black/90 text-white text-xs font-medium px-1.5 py-0.5 rounded">
                     {fmtDuration(v.duration)}
                   </span>
                 )}
               </div>
-              <div className="p-3 space-y-1">
-                <p className="text-white text-sm font-medium line-clamp-2 group-hover:text-red-400 transition-colors">
+
+              {/* Info */}
+              <div className="p-3 space-y-1.5">
+                <p className="text-white text-sm font-medium line-clamp-2 group-hover:text-red-400 transition-colors leading-snug">
                   {v.title}
                 </p>
-                <p className="text-gray-400 text-xs">
-                  {v.view_count > 0 ? fmtViews(v.view_count) : ""}
-                  {date && ` · ${formatDistanceToNow(date, { addSuffix: true })}`}
+                <p className="text-[#717171] text-xs flex items-center gap-1.5">
+                  {v.view_count > 0 && <span>{fmtViews(v.view_count)}</span>}
+                  {v.view_count > 0 && date && <span>·</span>}
+                  {date && <span>{formatDistanceToNow(date, { addSuffix: true })}</span>}
                 </p>
                 {v.description && (
-                  <p className="text-gray-500 text-xs line-clamp-3 pt-1 border-t border-gray-800">
+                  <p className="text-[#555] text-xs line-clamp-2 pt-1.5 border-t border-white/5 leading-relaxed">
                     {v.description.split("\n")[0]}
                   </p>
                 )}
