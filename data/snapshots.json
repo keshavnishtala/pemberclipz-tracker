@@ -1,11 +1,5 @@
 [
   {
-    "timestamp": 1783240551022,
-    "subscriber_count": 15,
-    "view_count": 0,
-    "video_count": 0
-  },
-  {
     "timestamp": 1783256460314,
     "subscriber_count": 15,
     "view_count": 0,
@@ -2185,6 +2179,12 @@
   },
   {
     "timestamp": 1791257333100,
+    "subscriber_count": 14,
+    "view_count": 0,
+    "video_count": 0
+  },
+  {
+    "timestamp": 1791289045450,
     "subscriber_count": 14,
     "view_count": 0,
     "video_count": 0
